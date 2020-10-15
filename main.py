@@ -16,6 +16,8 @@ class Game:
     def new(self):
         # start a new game
         self.all_sprites = pg.sprite.Group()
+        self.platforms = pg.sprite.Group()
+        #Spawn sprites
         self.player = Player()
         self.all_sprites.add(self.player)
         self.run()
@@ -44,7 +46,7 @@ class Game:
 
     def draw(self):
         # Game Loop - draw
-        self.screen.fill(BLACK)
+        self.screen.fill(BLUE)
         self.all_sprites.draw(self.screen)
         # *after* drawing everything, flip the display
         pg.display.flip()
