@@ -43,8 +43,9 @@ class Game:
         self.player = Player(self)
         self.all_sprites.add(self.player)
         self.spawn_platforms()
+        self.health = 100.0
         self.run()
-        self.health = 100
+
 
     def run(self):
         # Game Loop
@@ -65,7 +66,7 @@ class Game:
                 self.losts += 1
                 plat.lost = False
         for i in range(self.losts):
-            self.w = random.randrange(50,300)
+            self.w = random.randrange(100,500)
             self.x = random.randrange(WIDTH,WIDTH*2)
             self.y = random.randrange(0,HEIGHT)
             self.p = Platform(self.x,self.y,self.w,20,random.randrange(2,10),self)
@@ -75,6 +76,13 @@ class Game:
                 self.m = Person(self,self.p)
                 self.all_sprites.add(self.m)
                 self.people.add(self.m)
+                self.d = Radiusc(self.m)
+                self.all_sprites.add(self.d)
+        self.distance = pg.sprite.spritecollide(self.player,self.people,False,pg.sprite.collide_circle)
+        if self.distance:
+            self.health -= 1
+        pg.display.set_caption("Your health = " + str(self.health))
+
 
 
 
@@ -90,6 +98,9 @@ class Game:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE:
                     self.player.jump(30)
+        if self.health < 0:
+            self.running = False
+            quit()
 
     def draw(self):
         # Game Loop - draw
@@ -111,5 +122,5 @@ g.show_start_screen()
 while g.running:
     g.new()
     g.show_go_screen()
-
 pg.quit()
+quit()
