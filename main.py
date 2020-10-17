@@ -14,24 +14,37 @@ class Game:
         self.running = True
 
     def hit_ground(self):
-        self.platcols = pg.sprite.spritecollide(self.player, self.spawn_platforms,False)
+        self.platcols = pg.sprite.spritecollide(self.player, self.platforms,False)
         if self.platcols:
-            self.player.pos.y = hits[0].top
+            if self.player.vel.y >= 0:
+                self.player.pos.y = self.platcols[0].rect.top
+                self.player.vel.y = 0- self.player.vel.y / self.platcols[0].bounce
+
+
 
     def spawn_platforms(self):
-        self.ground = Platform(0,HEIGHT,WIDTH,30)
+        self.ground = Platform(0,HEIGHT,WIDTH,30,10,self,stationary=True)
         self.all_sprites.add(self.ground)
         self.platforms.add(self.ground)
+        for i in range(8):
+            self.w = random.randrange(10,300)
+            self.x = random.randrange(0,WIDTH)
+            self.y = random.randrange(0,HEIGHT)
+            self.p = Platform(self.x,self.y,self.w,20,random.randrange(2,10),self)
+            self.all_sprites.add(self.p)
+            self.platforms.add(self.p)
 
     def new(self):
         # start a new game
         self.all_sprites = pg.sprite.Group()
         self.platforms = pg.sprite.Group()
+        self.people = pg.sprite.Group()
         #Spawn sprites
         self.player = Player(self)
         self.all_sprites.add(self.player)
         self.spawn_platforms()
         self.run()
+        self.health = 100
 
     def run(self):
         # Game Loop
@@ -46,6 +59,25 @@ class Game:
         # Game Loop - Update
         self.all_sprites.update()
         self.hit_ground()
+        self.losts = 0
+        for plat in self.platforms:
+            if plat.active and plat.lost:
+                self.losts += 1
+                plat.lost = False
+        for i in range(self.losts):
+            self.w = random.randrange(50,300)
+            self.x = random.randrange(WIDTH,WIDTH*2)
+            self.y = random.randrange(0,HEIGHT)
+            self.p = Platform(self.x,self.y,self.w,20,random.randrange(2,10),self)
+            self.all_sprites.add(self.p)
+            self.platforms.add(self.p)
+            if random.random() > 0.5:
+                self.m = Person(self,self.p)
+                self.all_sprites.add(self.m)
+                self.people.add(self.m)
+
+
+
 
     def events(self):
         # Game Loop - events
@@ -55,6 +87,9 @@ class Game:
                 if self.playing:
                     self.playing = False
                 self.running = False
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_SPACE:
+                    self.player.jump(30)
 
     def draw(self):
         # Game Loop - draw
