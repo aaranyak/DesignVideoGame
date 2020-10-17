@@ -80,8 +80,8 @@ class Game:
                 self.all_sprites.add(self.d)
         self.distance = pg.sprite.spritecollide(self.player,self.people,False,pg.sprite.collide_circle)
         if self.distance:
-            self.health -= 1
-        pg.display.set_caption("Your health = " + str(self.health))
+            self.health -= 1 / FPS
+        pg.display.set_caption("Your health = " + str(int(self.health)))
 
 
 
