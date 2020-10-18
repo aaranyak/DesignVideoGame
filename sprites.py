@@ -63,7 +63,7 @@ class Person(pg.sprite.Sprite):
         self.image = pg.Surface((30,70))
         self.rect = self.image.get_rect()
         self.image.fill(RED)
-        self.radius = random.randrange(150,270)
+        self.radius = random.randrange(70,200)
         #pg.draw.circle(self.image,RED,self.rect.center,self.radius)
         self.platform = platform
         self.rect.midbottom = self.platform.rect.midtop
@@ -86,7 +86,7 @@ class Radiusc(pg.sprite.Sprite):
     def __init__(self,person):
         pg.sprite.Sprite.__init__(self)
         self.person = person
-        self.image = pg.transform.scale(corona_radius.convert(),(self.person.radius,self.person.radius))
+        self.image = pg.transform.scale(corona_radius.convert(),(self.person.radius *2,self.person.radius*2))
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.rect.center = self.person.rect.center

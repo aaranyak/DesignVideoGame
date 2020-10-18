@@ -30,7 +30,7 @@ class Game:
             self.w = random.randrange(10,300)
             self.x = random.randrange(0,WIDTH)
             self.y = random.randrange(0,HEIGHT)
-            self.p = Platform(self.x,self.y,self.w,20,random.randrange(2,10),self)
+            self.p = Platform(self.x,self.y,self.w,20,random.randrange(1,5),self)
             self.all_sprites.add(self.p)
             self.platforms.add(self.p)
 
@@ -72,7 +72,7 @@ class Game:
             self.p = Platform(self.x,self.y,self.w,20,random.randrange(2,10),self)
             self.all_sprites.add(self.p)
             self.platforms.add(self.p)
-            if random.random() > 0.5:
+            if random.random() > 0.7:
                 self.m = Person(self,self.p)
                 self.all_sprites.add(self.m)
                 self.people.add(self.m)
@@ -80,8 +80,8 @@ class Game:
                 self.all_sprites.add(self.d)
         self.distance = pg.sprite.spritecollide(self.player,self.people,False,pg.sprite.collide_circle)
         if self.distance:
-            self.health -= 1
-        pg.display.set_caption("Your health = " + str(self.health))
+            self.health -= 1 / FPS
+        pg.display.set_caption("Your health = " + str(int(self.health)))
 
 
 
