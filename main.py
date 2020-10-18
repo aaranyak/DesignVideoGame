@@ -19,8 +19,22 @@ class Game:
             if self.player.vel.y >= 0:
                 self.player.pos.y = self.platcols[0].rect.top
                 self.player.vel.y = 0- self.player.vel.y / self.platcols[0].bounce
+    def draw_text(self,surf,text,size,x,y,color):
+        self.font = pg.font.Font(FONT_NAME,size)
+        self.text_surf = self.font.render(text, True , color)
+        self.text_rect = self.text_surf.get_rect()
+        self.text_rect.topleft = (x, y)
+        surf.blit(self.text_surf, self.text_rect)
 
-
+    def draw_progress_bar(self,surf,color,outiline,x,y,w,h,pct,textcol):
+        self.pct = pct
+        if self.pct < 0:
+            self.pct = 0
+        self.outline = pg.Rect(x,y,w,h)
+        self.fill = pg.Rect(x,y,int(float(pct) / 100.0 * float(w)),h)
+        pg.draw.rect(surf,color,self.fill)
+        pg.draw.rect(surf,outiline,self.outline,2)
+        self.draw_text(surf,str(int(pct)) + "%",h-3,x,y,textcol)
 
     def spawn_platforms(self):
         self.ground = Platform(0,HEIGHT,WIDTH,30,10,self,stationary=True)
@@ -45,7 +59,6 @@ class Game:
         self.spawn_platforms()
         self.health = 100.0
         self.run()
-
 
     def run(self):
         # Game Loop
@@ -80,8 +93,8 @@ class Game:
                 self.all_sprites.add(self.d)
         self.distance = pg.sprite.spritecollide(self.player,self.people,False,pg.sprite.collide_circle)
         if self.distance:
-            self.health -= 1 / FPS
-        pg.display.set_caption("Your health = " + str(int(self.health)))
+            self.health -= 3 / FPS
+
 
 
 
@@ -106,6 +119,8 @@ class Game:
         # Game Loop - draw
         self.screen.fill(BLUE)
         self.all_sprites.draw(self.screen)
+        self.draw_progress_bar(self.screen,GREEN,BROWN,130,5,300,30,self.health,BLACK)
+        self.draw_text(self.screen,"Health =", 30,3,3,BLACK)
         # *after* drawing everything, flip the display
         pg.display.flip()
 
