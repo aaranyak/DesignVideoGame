@@ -58,7 +58,7 @@ class Platform(pg.sprite.Sprite):
             self.active = True
 
 class Person(pg.sprite.Sprite):
-    def __init__(self,game,platform):
+    def __init__(self,game,platform,moving = False):
         pg.sprite.Sprite.__init__(self)
         self.image = pg.Surface((30,70))
         self.rect = self.image.get_rect()
@@ -69,18 +69,19 @@ class Person(pg.sprite.Sprite):
         self.rect.midbottom = self.platform.rect.midtop
         self.ppoint = vec(self.platform.rect.centerx,self.platform.rect.top)
         self.pos = vec(0,0)
-        self.speed = 2
+        if moving:
+            self.speed = 2
+        else:
+            self.speed = 0
+        self.addx = 0
 
     def update(self):
-        # if self.rect.right > self.platform.rect.right:
-        #     self.speed = 0 - self.speed
-        #     print(self.speed)
-        # if self.rect.left < self.platform.rect.left:
-        #     self.speed = 0 - self.speed
-        #     print(2)
-        # self.pos.x += self.speed
-        self.rect.midbottom = self.platform.rect.midtop
-        #pg.draw.circle(self.image,RED,self.rect.center,self.radius)
+        self.ppoint = vec(self.platform.rect.centerx,self.platform.rect.top)
+        if self.rect.right > self.platform.rect.right or self.rect.left < self.platform.rect.left:
+            self.speed = 0-self.speed
+        self.addx += self.speed
+        self.rect.centerx = self.ppoint.x + self.addx
+        self.rect.bottom = self.platform.rect.top
         # print(1)
 class Radiusc(pg.sprite.Sprite):
     def __init__(self,person):
