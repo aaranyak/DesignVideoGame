@@ -86,7 +86,7 @@ class Game:
             self.all_sprites.add(self.p)
             self.platforms.add(self.p)
             if random.random() > 0.7:
-                self.m = Person(self,self.p)
+                self.m = Person(self,self.p,random.choice([False,True]))
                 self.all_sprites.add(self.m)
                 self.people.add(self.m)
                 self.d = Radiusc(self.m)
