@@ -37,7 +37,7 @@ class Game:
         self.draw_text(surf,str(int(pct)) + "%",h-3,x,y,textcol)
 
     def spawn_platforms(self):
-        self.ground = Platform(0,HEIGHT,WIDTH,30,10,self,stationary=True)
+        self.ground = Platform(0,HEIGHT,WIDTH,30,1,self,stationary=True)
         self.all_sprites.add(self.ground)
         self.platforms.add(self.ground)
         for i in range(8):
