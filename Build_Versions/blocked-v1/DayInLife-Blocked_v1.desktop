@@ -1,9 +1,0 @@
-[Desktop Entry]
-
-Type=Application
-Version=0.1
-Name=Day In life (Blocked)
-Comment=Video game that teaches social distancing (not yet finished)
-Exec=/usr/bin/DayInLife_Blocked-v1
-Icon=/usr/share/icons/hicolor/symbolic/apps/DayInLife_blocked_v1.png
-Terminal=false

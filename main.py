@@ -75,16 +75,22 @@ class Game:
         self.all_sprites.add(self.player)
         self.spawn_platforms()
         self.health = 100.0
+        self.jump_sound = pg.mixer.Sound(os.path.join(GAME_FOLDER,'phaseJump2.wav'))
+        self.lose_sound = pg.mixer.Sound(os.path.join(GAME_FOLDER,'zapThreeToneDown.wav'))
+        self.win_sound = pg.mixer.Sound(os.path.join(GAME_FOLDER,'coin.wav'))
+        pg.mixer.music.load(os.path.join(GAME_FOLDER,'NaughtyNess.ogg'))
         self.run()
 
     def run(self):
         # Game Loop
+        pg.mixer.music.play(loops=-1)
         self.playing = True
         while self.playing:
             self.clock.tick(FPS)
             self.events()
             self.update()
             self.draw()
+        pg.mixer.music.fadeout(100)
 
     def update(self):
         # Game Loop - Update
@@ -133,7 +139,13 @@ class Game:
                     self.player.jump(30)
         if self.health < 0:
             self.game_over = True
+            self.lose_sound.play()
             self.playing = False
+        elif len(self.platforms) > 8 * 4 + 8 * self.level:
+            self.game_over = False
+            self.win_sound.play()
+            self.playing = False
+
 
     def draw(self):
         # Game Loop - draw
@@ -143,6 +155,7 @@ class Game:
             self.screen.blit(corona.image,corona.rect,special_flags=pg.BLEND_SUB)
         self.draw_progress_bar(self.screen,GREEN,BROWN,130,5,300,30,self.health,BLACK)
         self.draw_text(self.screen,"Health =", 30,3,3,BLACK)
+        self.draw_text_center(self.screen,"You are on level " + str(self.level),30,WIDTH / 2, 40,RED)
         for person in self.people:
             self.draw_text_center(self.screen,"Keep Distance (Or Else!)",20,person.rect.centerx,person.rect.top,GREEN)
 
@@ -151,6 +164,8 @@ class Game:
 
     def show_start_screen(self):
         # game splash/start screen
+        pg.mixer.music.load(os.path.join(GAME_FOLDER,'Em-Poms-.ogg'))
+        pg.mixer.music.play(loops=-1)
         self.screen.fill(BLUE)
         self.draw_text_center(self.screen,TITLE,50,WIDTH/2,HEIGHT/2 - 200,GREEN)
         self.draw_text_center(self.screen,""" Welcome to Day in Life""",30,WIDTH/2,HEIGHT/2 - 100,RED)
@@ -161,11 +176,14 @@ class Game:
         self.draw_text_center(self.screen,""" Use your arrow keys to move and spacebar to jump!""",20,WIDTH/2,HEIGHT/2 + 15,RED)
         self.draw_text_center(self.screen,""" Have Fun!""",25,WIDTH/2,HEIGHT/2 + 40,RED)
         self.wait_for_key(self.playbutton,True)
+        pg.mixer.music.fadeout(100)
 
 
 
     def show_go_screen(self):
         # game over/continue
+        pg.mixer.music.load(os.path.join(GAME_FOLDER,'Em-Poms-.ogg'))
+        pg.mixer.music.play(loops=-1)
         self.screen.fill(BLUE)
         self.end_screen_sprites.draw(self.screen)
         self.draw_text_center(self.screen,TITLE,50,WIDTH/2,HEIGHT/2 - 200,GREEN)
@@ -176,14 +194,17 @@ class Game:
         self.draw_text_center(self.screen,""" and don't forget to sanitize your hands whenever you can.""",20,WIDTH/2,HEIGHT/2 - 5,RED)
         self.draw_text_center(self.screen,""" Use your arrow keys to move and spacebar to jump!""",20,WIDTH/2,HEIGHT/2 + 15,RED)
         self.draw_text_center(self.screen,""" Have Fun!""",25,WIDTH/2,HEIGHT/2 + 40,RED)
-        self.playagbutton = Button(WIDTH / 2,500,200,70,GREEN,(0,170,0))
+        self.playagbutton = Button(WIDTH / 2,500,200,70,(0,170,0),GREEN)
         self.end_screen_sprites.add(self.playagbutton)
         self.wait_for_key(self.playagbutton,False)
+        pg.mixer.music.fadeout(100)
     def show_win_screen(self):
+        pg.mixer.music.load(os.path.join(GAME_FOLDER,'Em-Poms-.ogg'))
+        pg.mixer.music.play(loops=-1)
         self.screen.fill(BLUE)
         self.end_screen_sprites.draw(self.screen)
-        self.draw_text_center(self.screen,"You Win",50,WIDTH/2,HEIGHT/2 - 200,GREEN)
-        self.draw_text_center(self.screen,""" Gp to the next level""",30,WIDTH/2,HEIGHT/2 - 100,RED)
+        self.draw_text_center(self.screen,"You Win!",50,WIDTH/2,HEIGHT/2 - 200,GREEN)
+        self.draw_text_center(self.screen,"Time to advance to level "+str(self.level+1)+"!",30,WIDTH/2,HEIGHT/2 - 100,RED)
         self.draw_text_center(self.screen,""" This is a video game where you learn to survive""",20,WIDTH/2,HEIGHT/2 - 65,RED)
         self.draw_text_center(self.screen,""" in a daily life routine.""",20,WIDTH/2,HEIGHT/2 - 45,RED)
         self.draw_text_center(self.screen,""" Keep social distance from other people and keep your mask on""",20,WIDTH/2,HEIGHT/2 - 25,RED)
@@ -191,13 +212,17 @@ class Game:
         self.draw_text_center(self.screen,""" Use your arrow keys to move and spacebar to jump!""",20,WIDTH/2,HEIGHT/2 + 15,RED)
         self.draw_text_center(self.screen,""" Have Fun!""",25,WIDTH/2,HEIGHT/2 + 40,RED)
         self.wait_for_key(self.playbutton,True)
+        pg.mixer.music.fadeout(100)
         self.level += 1
     def wait_for_key(self,playevent,start):
         self.waiting = True
+        self.start_sound = pg.mixer.Sound(os.path.join(GAME_FOLDER,'powerUp3.wav'))
         while self.waiting:
             if start:
                 self.start_screen_sprites.draw(self.screen)
+                self.screen.blit(playevent.image,playevent.rect)
                 self.draw_text_center(self.screen,"Click to play!",20,WIDTH / 2,500,RED)
+                playevent.update()
                 self.start_screen_sprites.update()
             else:
                 self.screen.blit(playevent.image,playevent.rect)
@@ -210,6 +235,7 @@ class Game:
                     pg.quit()
                     quit()
                 if event.type == pg.MOUSEBUTTONDOWN and playevent.mouse_hovered():
+                    self.start_sound.play()
                     self.waiting = False
             self.clock.tick(FPS)
             pg.display.flip()

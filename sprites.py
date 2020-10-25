@@ -33,6 +33,7 @@ class Player(pg.sprite.Sprite):
         self.platcols = pg.sprite.spritecollide(self,self.game.platforms,False)
         self.rect.y -= 1
         if self.platcols:
+            self.game.jump_sound.play()
             self.vel.y = -pow
 
 class Platform(pg.sprite.Sprite):
@@ -56,7 +57,6 @@ class Platform(pg.sprite.Sprite):
             self.rect.bottomleft = self.pos
         if self.rect.left < 0:
             self.active = True
-
 class Person(pg.sprite.Sprite):
     def __init__(self,game,platform,moving = False):
         pg.sprite.Sprite.__init__(self)
@@ -82,7 +82,6 @@ class Person(pg.sprite.Sprite):
         self.addx += self.speed
         self.rect.centerx = self.ppoint.x + self.addx
         self.rect.bottom = self.platform.rect.top
-        # print(1)
 class Radiusc(pg.sprite.Sprite):
     def __init__(self,person):
         pg.sprite.Sprite.__init__(self)

@@ -8,6 +8,7 @@ FPS = 60
 
 GAME_FOLDER = os.path.dirname(__file__)
 
+
 # define colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
