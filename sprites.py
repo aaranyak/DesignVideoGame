@@ -88,8 +88,30 @@ class Radiusc(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self)
         self.person = person
         self.image = pg.transform.scale(corona_radius.convert(),(self.person.radius *2,self.person.radius*2))
-        self.image.set_colorkey(BLACK)
+        #self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.rect.center = self.person.rect.center
     def update(self):
         self.rect.center = self.person.rect.center
+class Button(pg.sprite.Sprite):
+    def __init__(self,x,y,w,h,color,hovercolor):
+        pg.sprite.Sprite.__init__(self)
+        self.image = pg.Surface((w,h))
+        self.image.fill(color)
+        self.rect = self.image.get_rect()
+        self.rect.center = (x,y)
+        self.color = color
+        self.hovercolor = hovercolor
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+    def update(self):
+        self.image.fill(self.color)
+        if self.mouse_hovered():
+            self.image.fill(self.hovercolor)
+    def mouse_hovered(self):
+        if pg.mouse.get_pos()[0] in range(self.rect.left,self.rect.right) and pg.mouse.get_pos()[1] in range(self.rect.top,self.rect.bottom):
+            return True
+        else:
+            return False
