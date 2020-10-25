@@ -1,17 +1,18 @@
 # game options/settings
 import os
 import pygame as pg
-TITLE = "( 0 \/ | |) I9 A guide to staying safe."
+TITLE = "A Day in Life"
 WIDTH = 1000
 HEIGHT = 600
 FPS = 60
 
 GAME_FOLDER = os.path.dirname(__file__)
 
+
 # define colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-RED = (255, 0, 0)
+RED = (200, 50, 50)
 GREEN = (0, 255, 0)
 BLUE = (0, 200, 255)
 YELLOW = (255, 255, 0)
