@@ -78,7 +78,7 @@ class Game:
         self.jump_sound = pg.mixer.Sound(os.path.join(GAME_FOLDER,'phaseJump2.wav'))
         self.lose_sound = pg.mixer.Sound(os.path.join(GAME_FOLDER,'zapThreeToneDown.wav'))
         self.win_sound = pg.mixer.Sound(os.path.join(GAME_FOLDER,'coin.wav'))
-        pg.mixer.music.load(os.path.join(GAME_FOLDER,'NaughtyNess.ogg'))
+        pg.mixer.music.load(os.path.join(GAME_FOLDER,'Chase.ogg'))
         self.run()
 
     def run(self):
@@ -117,7 +117,7 @@ class Game:
                 self.corona_radiuses.add(self.d)
         self.distance = pg.sprite.spritecollide(self.player,self.people,False,pg.sprite.collide_circle)
         if self.distance:
-            self.health -= 6 / FPS
+            self.health -= 12 / FPS
 
 
 
@@ -164,7 +164,7 @@ class Game:
 
     def show_start_screen(self):
         # game splash/start screen
-        pg.mixer.music.load(os.path.join(GAME_FOLDER,'Em-Poms-.ogg'))
+        pg.mixer.music.load(os.path.join(GAME_FOLDER,'NaughtyNess.ogg'))
         pg.mixer.music.play(loops=-1)
         self.screen.fill(BLUE)
         self.draw_text_center(self.screen,TITLE,50,WIDTH/2,HEIGHT/2 - 200,GREEN)
@@ -199,7 +199,7 @@ class Game:
         self.wait_for_key(self.playagbutton,False)
         pg.mixer.music.fadeout(100)
     def show_win_screen(self):
-        pg.mixer.music.load(os.path.join(GAME_FOLDER,'Em-Poms-.ogg'))
+        pg.mixer.music.load(os.path.join(GAME_FOLDER,'NaughtyNess.ogg'))
         pg.mixer.music.play(loops=-1)
         self.screen.fill(BLUE)
         self.end_screen_sprites.draw(self.screen)

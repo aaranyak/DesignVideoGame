@@ -24,4 +24,4 @@ PLAYER_ACC = 2
 PLAYER_GRAV = 1
 PLAYER_FRIC = -0.22
 
-FONT_NAME = pg.font.match_font('comic sans ms')
+FONT_NAME = pg.font.match_font('ubuntu')
