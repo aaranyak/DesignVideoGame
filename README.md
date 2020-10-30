@@ -11,7 +11,3 @@ it is easy to play and lots of fun too
 Put your review here
 
 ---
-
-# Review
-
-like = (x) Yes () No
