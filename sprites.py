@@ -3,7 +3,7 @@ import random
 import pygame as pg
 from settings import *
 
-corona_radius = pg.image.load(os.path.join(GAME_FOLDER,'corona_radius.png'))
+corona_radius = pg.image.load(os.path.join(IMAGE_FOLDER,'corona_radius.png'))
 vec = pg.math.Vector2
 class Player(pg.sprite.Sprite):
     def __init__(self,game):

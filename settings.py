@@ -7,6 +7,8 @@ HEIGHT = 600
 FPS = 60
 
 GAME_FOLDER = os.path.dirname(__file__)
+MUSIC_FOLDER = os.path.join(GAME_FOLDER,'Music')
+IMAGE_FOLDER = os.path.join(GAME_FOLDER,'Pictures')
 
 
 # define colors
