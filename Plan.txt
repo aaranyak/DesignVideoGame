@@ -3,3 +3,6 @@ saturday: finish the player sprite animations and add it to code
 sunday: add the animations of all the other sprites and if there is time add background effects
 monday: add props and decorations and touch-ups
 tuesday , wednesday: Buffer time
+
+Other Homeworks
+Friday 7:00 PHE homeworks
