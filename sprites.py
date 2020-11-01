@@ -2,21 +2,48 @@
 import random
 import pygame as pg
 from settings import *
-
-corona_radius = pg.image.load(os.path.join(IMAGE_FOLDER,'corona_radius.png'))
 vec = pg.math.Vector2
+corona_radius = pg.image.load(os.path.join(IMAGE_FOLDER,'corona_radius.png'))
+class SpriteSheet:
+    def __init__(self, filename,w,h,imw,imh,colorkey):
+        self.filename = filename
+        self.spritesheet = pg.image.load(self.filename).convert_alpha()
+        self.colorkey = colorkey
+        self.width = w
+        self.height = h
+        self.imw = imw
+        self.imh = imh
+        self.images = self.calculate_images()
+    def get_image(self):
+        pass
+    def calculate_images(self):
+        self.listim = []
+        for c in range(self.height):
+            for i in range(self.width):
+                image = pg.Surface((self.imw,self.imh))
+                image.blit(self.spritesheet,(0,0),(i * self.imw,c * self.imh,self.imw,self.imh))
+                image.set_colorkey(self.colorkey)
+                self.listim.append(image)
+        return self.listim
+
 class Player(pg.sprite.Sprite):
     def __init__(self,game):
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.Surface((30,70))
+        self.game = game
+        self.image = pg.transform.scale(self.game.player_spritesheet.images[7],(60,120))
+        self.run_count = 0
+        self.spritesheet = self.game.player_spritesheet
         self.rect = self.image.get_rect()
-        self.image.fill(YELLOW)
         self.rect.center = (WIDTH / 2,0)
+        self.oldframe = 0
         self.acc = vec(0,0)
         self.vel = vec(0,0)
         self.pos = vec(WIDTH / 2,HEIGHT / 2)
-        self.game = game
     def update(self):
+        self.oldframe += 1
+        if self.oldframe > 2:
+            self.oldframe = 0
+        self.set_image()
         self.acc = vec(0,PLAYER_GRAV)
         keys = pg.key.get_pressed()
         if keys[pg.K_LEFT]:
@@ -35,7 +62,23 @@ class Player(pg.sprite.Sprite):
         if self.platcols:
             self.game.jump_sound.play()
             self.vel.y = -pow
-
+    def set_image(self):
+        if self.run_count > 6:
+            self.run_count = 0
+        if self.vel.y < -3:
+            self.image = pg.transform.scale(self.spritesheet.images[8],(60,120))
+            self.run_count = 1
+        elif self.vel.y > 3:
+            self.image = pg.transform.scale(self.spritesheet.images[7],(60,120))
+            self.run_count = 1
+        else:
+            self.image = pg.transform.scale(self.spritesheet.images[self.run_count],(60,120))
+        if self.vel.x > 3 or self.vel.x < -3:
+            if self.oldframe == 1:
+                self.run_count += 1
+        if self.vel.x < 0:
+            self.image = pg.transform.flip(self.image,True,False)
+        self.mask = pg.mask.from_surface(self.image)
 class Platform(pg.sprite.Sprite):
     def __init__(self, x, y, width, height,bounce,game,stationary=False):
         pg.sprite.Sprite.__init__(self)
@@ -60,9 +103,12 @@ class Platform(pg.sprite.Sprite):
 class Person(pg.sprite.Sprite):
     def __init__(self,game,platform,moving = False):
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.Surface((30,70))
+        if moving:
+            self.image = pg.transform.scale(random.choice(game.cars),(100,50))
+        else:
+            self.image = pg.transform.scale(random.choice(game.guy2image),(40,160))
         self.rect = self.image.get_rect()
-        self.image.fill(RED)
+        self.image.set_colorkey(BLACK)
         self.radius = random.randrange(70,200)
         #pg.draw.circle(self.image,RED,self.rect.center,self.radius)
         self.platform = platform
@@ -70,7 +116,7 @@ class Person(pg.sprite.Sprite):
         self.ppoint = vec(self.platform.rect.centerx,self.platform.rect.top)
         self.pos = vec(0,0)
         if moving:
-            self.speed = 2
+            self.speed = -2
         else:
             self.speed = 0
         self.addx = 0
@@ -79,6 +125,7 @@ class Person(pg.sprite.Sprite):
         self.ppoint = vec(self.platform.rect.centerx,self.platform.rect.top)
         if self.rect.right > self.platform.rect.right or self.rect.left < self.platform.rect.left:
             self.speed = 0-self.speed
+            self.image = pg.transform.flip(self.image,True,False)
         self.addx += self.speed
         self.rect.centerx = self.ppoint.x + self.addx
         self.rect.bottom = self.platform.rect.top
@@ -86,10 +133,11 @@ class Radiusc(pg.sprite.Sprite):
     def __init__(self,person):
         pg.sprite.Sprite.__init__(self)
         self.person = person
-        self.image = pg.transform.scale(corona_radius.convert(),(self.person.radius *2,self.person.radius*2))
+        self.image = pg.transform.scale(corona_radius.convert_alpha(),(self.person.radius *2,self.person.radius*2))
         #self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.rect.center = self.person.rect.center
+        self.mask = pg.mask.from_surface(self.image)
     def update(self):
         self.rect.center = self.person.rect.center
 class Button(pg.sprite.Sprite):

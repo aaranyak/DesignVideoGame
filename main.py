@@ -50,14 +50,14 @@ class Game:
         self.draw_text(surf,str(int(pct)) + "%",h-3,x,y,textcol)
 
     def spawn_platforms(self):
-        self.ground = Platform(0,HEIGHT,WIDTH,30,1,self,stationary=True)
+        self.ground = Platform(0,HEIGHT,WIDTH,30,10,self,stationary=True)
         self.all_sprites.add(self.ground)
         self.platforms.add(self.ground)
         for i in range(8):
             self.w = random.randrange(10,300)
             self.x = random.randrange(0,WIDTH)
             self.y = random.randrange(0,HEIGHT)
-            self.p = Platform(self.x,self.y,self.w,20,random.randrange(1,5),self)
+            self.p = Platform(self.x,self.y,self.w,20,10,self)
             self.all_sprites.add(self.p)
             self.platforms.add(self.p)
 
@@ -70,6 +70,9 @@ class Game:
         self.start_screen_sprites = pg.sprite.Group()
         self.end_screen_sprites = pg.sprite.Group()
         self.corona_radiuses = pg.sprite.Group()
+        self.player_spritesheet = SpriteSheet(PLAYER_SPRITESHEET,7,2,446,793,BLACK)
+        self.guy2image = [pg.image.load(os.path.join(os.path.join(IMAGE_FOLDER,'Cars'),'guy2.png')).convert_alpha(),pg.image.load(os.path.join(os.path.join(IMAGE_FOLDER,'Cars'),'guy3.png')).convert_alpha()]
+        self.cars = [pg.image.load(os.path.join(os.path.join(IMAGE_FOLDER,'Cars'),'car1.png')).convert_alpha(),pg.image.load(os.path.join(os.path.join(IMAGE_FOLDER,'Cars'),'car2.png')).convert_alpha()]
         #Spawn sprites
         self.player = Player(self)
         self.all_sprites.add(self.player)
@@ -115,7 +118,7 @@ class Game:
                 self.people.add(self.m)
                 self.d = Radiusc(self.m)
                 self.corona_radiuses.add(self.d)
-        self.distance = pg.sprite.spritecollide(self.player,self.people,False,pg.sprite.collide_circle)
+        self.distance = pg.sprite.spritecollide(self.player,self.corona_radiuses,False,pg.sprite.collide_mask)
         if self.distance:
             self.health -= 12 / FPS
 
@@ -152,7 +155,8 @@ class Game:
         self.screen.fill(BLUE)
         self.all_sprites.draw(self.screen)
         for corona in self.corona_radiuses:
-            self.screen.blit(corona.image,corona.rect,special_flags=pg.BLEND_SUB)
+            self.screen.blit(corona.image,corona.rect)
+        self.people.draw(self.screen)
         self.draw_progress_bar(self.screen,GREEN,BROWN,130,5,300,30,self.health,BLACK)
         self.draw_text(self.screen,"Health =", 30,3,3,BLACK)
         self.draw_text_center(self.screen,"You are on level " + str(self.level),30,WIDTH / 2, 40,RED)

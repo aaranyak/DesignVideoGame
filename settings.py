@@ -10,6 +10,7 @@ GAME_FOLDER = os.path.dirname(__file__)
 MUSIC_FOLDER = os.path.join(GAME_FOLDER,'Music')
 IMAGE_FOLDER = os.path.join(GAME_FOLDER,'Pictures')
 
+PLAYER_SPRITESHEET = os.path.join(IMAGE_FOLDER,'player_spritesheet.png')
 
 # define colors
 WHITE = (255, 255, 255)
