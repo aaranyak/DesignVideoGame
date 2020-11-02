@@ -6,11 +6,20 @@ WIDTH = 1000
 HEIGHT = 600
 FPS = 60
 
+explode = []
 GAME_FOLDER = os.path.dirname(__file__)
 MUSIC_FOLDER = os.path.join(GAME_FOLDER,'Music')
 IMAGE_FOLDER = os.path.join(GAME_FOLDER,'Pictures')
 
 PLAYER_SPRITESHEET = os.path.join(IMAGE_FOLDER,'player_spritesheet.png')
+POWERUPS = {'sanitizer': os.path.join(IMAGE_FOLDER,'sanitizer.png')}
+HEALTH_RATE = 21
+for i in range(35):
+    if i < 10:
+        explode.append(os.path.join(IMAGE_FOLDER,'particle000'+str(i)+'.png'))
+    else:
+        explode.append(os.path.join(IMAGE_FOLDER,'particle00'+str(i)+'.png'))
+EXPLODE = explode
 
 # define colors
 WHITE = (255, 255, 255)

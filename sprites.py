@@ -115,6 +115,7 @@ class Person(pg.sprite.Sprite):
         self.rect.midbottom = self.platform.rect.midtop
         self.ppoint = vec(self.platform.rect.centerx,self.platform.rect.top)
         self.pos = vec(0,0)
+        self.movable = moving
         if moving:
             self.speed = -2
         else:
@@ -125,7 +126,8 @@ class Person(pg.sprite.Sprite):
         self.ppoint = vec(self.platform.rect.centerx,self.platform.rect.top)
         if self.rect.right > self.platform.rect.right or self.rect.left < self.platform.rect.left:
             self.speed = 0-self.speed
-            self.image = pg.transform.flip(self.image,True,False)
+            if self.movable:
+                self.image = pg.transform.flip(self.image,True,False)
         self.addx += self.speed
         self.rect.centerx = self.ppoint.x + self.addx
         self.rect.bottom = self.platform.rect.top
@@ -162,3 +164,34 @@ class Button(pg.sprite.Sprite):
             return True
         else:
             return False
+
+class Powerup(pg.sprite.Sprite):
+    def __init__(self,type,x,y,game):
+        pg.sprite.Sprite.__init__(self)
+        self.image = pg.transform.scale(pg.image.load(POWERUPS[type]).convert_alpha(),(50,50))
+        self.rect = self.image.get_rect()
+        self.rect.center = ((x,y))
+        self.pos = vec(x,y)
+        self.type = type
+        self.game = game
+    def update(self):
+        self.pos.x += -self.game.player.vel.x + 0.5 * self.game.player.acc.x
+        self.rect.center = self.pos
+class Explode(pg.sprite.Sprite):
+    def __init__(self,game,x,y):
+        pg.sprite.Sprite.__init__(self)
+        self.image = pg.transform.scale(pg.image.load(EXPLODE[0]).convert_alpha(),(50,30))
+        self.image.set_colorkey(BLACK)
+        self.rect = self.image.get_rect()
+        self.pos = vec(x,y)
+        self.count = 0
+        self.game = game
+    def update(self):
+        self.pos.x += -self.game.player.vel.x + 0.5 * self.game.player.acc.x
+        self.rect.center = self.pos
+        self.count += 1
+        if self.count < 33:
+            self.image = pg.transform.scale(pg.image.load(EXPLODE[self.count]).convert_alpha(),(100,100))
+            self.image.set_colorkey(BLACK)
+        if self.count > 33:
+            self.kill()

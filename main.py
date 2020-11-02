@@ -53,11 +53,11 @@ class Game:
         self.ground = Platform(0,HEIGHT,WIDTH,30,10,self,stationary=True)
         self.all_sprites.add(self.ground)
         self.platforms.add(self.ground)
-        for i in range(8):
-            self.w = random.randrange(10,300)
+        for i in range(5):
+            self.w = random.randrange(40,300)
             self.x = random.randrange(0,WIDTH)
             self.y = random.randrange(0,HEIGHT)
-            self.p = Platform(self.x,self.y,self.w,20,10,self)
+            self.p = Platform(self.x,self.y,self.w,25,10,self)
             self.all_sprites.add(self.p)
             self.platforms.add(self.p)
 
@@ -70,7 +70,9 @@ class Game:
         self.start_screen_sprites = pg.sprite.Group()
         self.end_screen_sprites = pg.sprite.Group()
         self.corona_radiuses = pg.sprite.Group()
+        self.invisibles = pg.sprite.Group()
         self.player_spritesheet = SpriteSheet(PLAYER_SPRITESHEET,7,2,446,793,BLACK)
+        self.power = pg.sprite.Group()
         self.guy2image = [pg.image.load(os.path.join(os.path.join(IMAGE_FOLDER,'Cars'),'guy2.png')).convert_alpha(),pg.image.load(os.path.join(os.path.join(IMAGE_FOLDER,'Cars'),'guy3.png')).convert_alpha()]
         self.cars = [pg.image.load(os.path.join(os.path.join(IMAGE_FOLDER,'Cars'),'car1.png')).convert_alpha(),pg.image.load(os.path.join(os.path.join(IMAGE_FOLDER,'Cars'),'car2.png')).convert_alpha()]
         #Spawn sprites
@@ -99,17 +101,30 @@ class Game:
         # Game Loop - Update
         self.all_sprites.update()
         self.corona_radiuses.update()
+        self.invisibles.update()
         self.hit_ground()
         self.losts = 0
         for plat in self.platforms:
             if plat.active and plat.lost:
                 self.losts += 1
                 plat.lost = False
+        if self.level > 0:
+            for i in range(self.losts):
+                self.w = random.randrange(40,400)
+                self.x = random.randrange(WIDTH,WIDTH*2)
+                self.y = HEIGHT
+                self.p = Platform(self.x,self.y,self.w,25,10,self)
+                self.invisibles.add(self.p)
+                self.m = Person(self,self.p,random.choice([False,True]))
+                self.all_sprites.add(self.m)
+                self.people.add(self.m)
+                self.d = Radiusc(self.m)
+                self.corona_radiuses.add(self.d)
         for i in range(self.losts):
-            self.w = random.randrange(100,500)
+            self.w = random.randrange(40,400)
             self.x = random.randrange(WIDTH,WIDTH*2)
             self.y = random.randrange(0,HEIGHT)
-            self.p = Platform(self.x,self.y,self.w,20,random.randrange(2,10),self)
+            self.p = Platform(self.x,self.y,self.w,25,10,self)
             self.all_sprites.add(self.p)
             self.platforms.add(self.p)
             if random.random() > 0.7:
@@ -118,9 +133,33 @@ class Game:
                 self.people.add(self.m)
                 self.d = Radiusc(self.m)
                 self.corona_radiuses.add(self.d)
-        self.distance = pg.sprite.spritecollide(self.player,self.corona_radiuses,False,pg.sprite.collide_mask)
+            if random.random() > 0.9:
+                pow = Powerup('sanitizer',random.randrange(WIDTH,WIDTH*2),random.randrange(40,HEIGHT-40),self)
+                self.all_sprites.add(pow)
+                self.power.add(pow)
+        self.distance = pg.sprite.spritecollide(self.player,self.people,False,pg.sprite.collide_circle)
         if self.distance:
-            self.health -= 12 / FPS
+            self.health -= HEALTH_RATE / FPS
+        for i in self.all_sprites:
+            if i.rect.right < 0 - WIDTH * 1:
+                i.kill()
+        for i in self.corona_radiuses:
+            if i.rect.right < 0 - WIDTH * 1:
+                i.kill()
+        for i in self.invisibles:
+            if i.rect.right < 0 - WIDTH * 1:
+                i.kill()
+        pows = pg.sprite.spritecollide(self.player,self.power,False)
+        if pows:
+            ex = Explode(self,pows[0].pos.x,pows[0].pos.y)
+            self.all_sprites.add(ex)
+            if self.health < 70:
+                self.health += 30
+                pows[0].kill()
+            else:
+                self.health = 100
+                pows[0].kill()
+
 
 
 
@@ -129,7 +168,7 @@ class Game:
 
 
     def events(self):
-        # Game Loop - events
+        # Game Loop - events0.7 - float(self.level) / 50.0
         for event in pg.event.get():
             # check for closing window
             if event.type == pg.QUIT:
@@ -144,7 +183,7 @@ class Game:
             self.game_over = True
             self.lose_sound.play()
             self.playing = False
-        elif len(self.platforms) > 8 * 4 + 8 * self.level:
+        elif self.player.pos.x > int(WIDTH * 4) + int(WIDTH * self.level):
             self.game_over = False
             self.win_sound.play()
             self.playing = False
@@ -190,7 +229,7 @@ class Game:
         pg.mixer.music.play(loops=-1)
         self.screen.fill(BLUE)
         self.end_screen_sprites.draw(self.screen)
-        self.draw_text_center(self.screen,TITLE,50,WIDTH/2,HEIGHT/2 - 200,GREEN)
+        self.draw_text_center(self.screen,"Game Over",50,WIDTH/2,HEIGHT/2 - 200,GREEN)
         self.draw_text_center(self.screen,""" Remember, this is day in life.""",30,WIDTH/2,HEIGHT/2 - 100,RED)
         self.draw_text_center(self.screen,""" This is a video game where you learn to survive""",20,WIDTH/2,HEIGHT/2 - 65,RED)
         self.draw_text_center(self.screen,""" in a daily life routine.""",20,WIDTH/2,HEIGHT/2 - 45,RED)
