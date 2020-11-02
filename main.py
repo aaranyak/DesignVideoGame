@@ -65,6 +65,7 @@ class Game:
         # start a new game
         self.game_over = False
         self.all_sprites = pg.sprite.Group()
+        self.powsound = pg.mixer.Sound(os.path.join(MUSIC_FOLDER,'confirmation_004.ogg'))
         self.platforms = pg.sprite.Group()
         self.people = pg.sprite.Group()
         self.start_screen_sprites = pg.sprite.Group()
@@ -108,18 +109,6 @@ class Game:
             if plat.active and plat.lost:
                 self.losts += 1
                 plat.lost = False
-        if self.level > 0:
-            for i in range(self.losts):
-                self.w = random.randrange(40,400)
-                self.x = random.randrange(WIDTH,WIDTH*2)
-                self.y = HEIGHT
-                self.p = Platform(self.x,self.y,self.w,25,10,self)
-                self.invisibles.add(self.p)
-                self.m = Person(self,self.p,random.choice([False,True]))
-                self.all_sprites.add(self.m)
-                self.people.add(self.m)
-                self.d = Radiusc(self.m)
-                self.corona_radiuses.add(self.d)
         for i in range(self.losts):
             self.w = random.randrange(40,400)
             self.x = random.randrange(WIDTH,WIDTH*2)
@@ -137,21 +126,34 @@ class Game:
                 pow = Powerup('sanitizer',random.randrange(WIDTH,WIDTH*2),random.randrange(40,HEIGHT-40),self)
                 self.all_sprites.add(pow)
                 self.power.add(pow)
+            if self.level != 0:
+                if random.random() < 0.5:
+                    self.w = random.randrange(40,400)
+                    self.x = random.randrange(WIDTH,WIDTH*2)
+                    self.y = HEIGHT
+                    self.p = Platform(self.x,self.y,self.w,25,10,self)
+                    self.invisibles.add(self.p)
+                    self.m = Person(self,self.p,random.choice([False,True]))
+                    self.all_sprites.add(self.m)
+                    self.people.add(self.m)
+                    self.d = Radiusc(self.m)
+                    self.corona_radiuses.add(self.d)
         self.distance = pg.sprite.spritecollide(self.player,self.people,False,pg.sprite.collide_circle)
         if self.distance:
             self.health -= HEALTH_RATE / FPS
-        for i in self.all_sprites:
-            if i.rect.right < 0 - WIDTH * 1:
-                i.kill()
         for i in self.corona_radiuses:
-            if i.rect.right < 0 - WIDTH * 1:
+            if i.rect.centerx < -WIDTH:
+                i.kill()
+        for i in self.all_sprites:
+            if i.rect.left < -WIDTH:
                 i.kill()
         for i in self.invisibles:
-            if i.rect.right < 0 - WIDTH * 1:
+            if i.rect.left < -WIDTH:
                 i.kill()
         pows = pg.sprite.spritecollide(self.player,self.power,False)
         if pows:
             ex = Explode(self,pows[0].pos.x,pows[0].pos.y)
+            self.powsound.play()
             self.all_sprites.add(ex)
             if self.health < 70:
                 self.health += 30
