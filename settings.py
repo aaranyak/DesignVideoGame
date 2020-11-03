@@ -14,6 +14,7 @@ IMAGE_FOLDER = os.path.join(GAME_FOLDER,'Pictures')
 PLAYER_SPRITESHEET = os.path.join(IMAGE_FOLDER,'player_spritesheet.png')
 POWERUPS = {'sanitizer': os.path.join(IMAGE_FOLDER,'sanitizer.png')}
 HEALTH_RATE = 21
+BACKGROUND_IMAGE = []
 for i in range(35):
     if i < 10:
         explode.append(os.path.join(IMAGE_FOLDER,'particle000'+str(i)+'.png'))

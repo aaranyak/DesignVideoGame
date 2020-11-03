@@ -193,16 +193,16 @@ class Game:
 
     def draw(self):
         # Game Loop - draw
-        self.screen.fill(BLUE)
+        self.screen.fill(BLACK)
         self.all_sprites.draw(self.screen)
         for corona in self.corona_radiuses:
             self.screen.blit(corona.image,corona.rect)
         self.people.draw(self.screen)
-        self.draw_progress_bar(self.screen,GREEN,BROWN,130,5,300,30,self.health,BLACK)
-        self.draw_text(self.screen,"Health =", 30,3,3,BLACK)
+        self.draw_progress_bar(self.screen,WHITE,RED,130,5,300,30,self.health,RED)
+        self.draw_text(self.screen,"Health =", 30,3,3,RED)
         self.draw_text_center(self.screen,"You are on level " + str(self.level),30,WIDTH / 2, 40,RED)
         for person in self.people:
-            self.draw_text_center(self.screen,"Keep Distance (Or Else!)",20,person.rect.centerx,person.rect.top,GREEN)
+            self.draw_text_center(self.screen,"Keep Distance (Or Else!)",20,person.rect.centerx,person.rect.top,WHITE)
 
         # *after* drawing everything, flip the display
         pg.display.flip()
@@ -211,7 +211,7 @@ class Game:
         # game splash/start screen
         pg.mixer.music.load(os.path.join(MUSIC_FOLDER,'Chase.ogg'))
         pg.mixer.music.play(loops=-1)
-        self.screen.fill(BLUE)
+        self.screen.fill(BLACK)
         self.draw_text_center(self.screen,TITLE,50,WIDTH/2,HEIGHT/2 - 200,GREEN)
         self.draw_text_center(self.screen,""" Welcome to Day in Life""",30,WIDTH/2,HEIGHT/2 - 100,RED)
         self.draw_text_center(self.screen,""" This is a video game where you learn to survive""",20,WIDTH/2,HEIGHT/2 - 65,RED)
@@ -229,7 +229,7 @@ class Game:
         # game over/continue
         pg.mixer.music.load(os.path.join(MUSIC_FOLDER,'Em-Poms-.ogg'))
         pg.mixer.music.play(loops=-1)
-        self.screen.fill(BLUE)
+        self.screen.fill(BLACK)
         self.end_screen_sprites.draw(self.screen)
         self.draw_text_center(self.screen,"Game Over",50,WIDTH/2,HEIGHT/2 - 200,GREEN)
         self.draw_text_center(self.screen,""" Remember, this is day in life.""",30,WIDTH/2,HEIGHT/2 - 100,RED)
@@ -246,7 +246,7 @@ class Game:
     def show_win_screen(self):
         pg.mixer.music.load(os.path.join(MUSIC_FOLDER,'Chase.ogg'))
         pg.mixer.music.play(loops=-1)
-        self.screen.fill(BLUE)
+        self.screen.fill(BLACK)
         self.end_screen_sprites.draw(self.screen)
         self.draw_text_center(self.screen,"You Win!",50,WIDTH/2,HEIGHT/2 - 200,GREEN)
         self.draw_text_center(self.screen,"Time to advance to level "+str(self.level+1)+"!",30,WIDTH/2,HEIGHT/2 - 100,RED)
