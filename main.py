@@ -185,7 +185,7 @@ class Game:
             self.game_over = True
             self.lose_sound.play()
             self.playing = False
-        elif self.player.pos.x > int(WIDTH * 4) + int(WIDTH * self.level):
+        elif self.player.pos.x > int(WIDTH * 4) + int(WIDTH * self.level*2):
             self.game_over = False
             self.win_sound.play()
             self.playing = False
