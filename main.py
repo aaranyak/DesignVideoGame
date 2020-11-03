@@ -84,6 +84,7 @@ class Game:
         self.jump_sound = pg.mixer.Sound(os.path.join(MUSIC_FOLDER,'phaseJump2.wav'))
         self.lose_sound = pg.mixer.Sound(os.path.join(MUSIC_FOLDER,'zapThreeToneDown.wav'))
         self.win_sound = pg.mixer.Sound(os.path.join(MUSIC_FOLDER,'coin.wav'))
+        self.maskcount = 0
         pg.mixer.music.load(os.path.join(MUSIC_FOLDER,'NaughtyNess.ogg'))
         self.run()
 
@@ -126,6 +127,10 @@ class Game:
                 pow = Powerup('sanitizer',random.randrange(WIDTH,WIDTH*2),random.randrange(40,HEIGHT-40),self)
                 self.all_sprites.add(pow)
                 self.power.add(pow)
+            if random.random() > 0.9:
+                pow = Powerup('mask',random.randrange(WIDTH,WIDTH*2),random.randrange(40,HEIGHT-40),self)
+                self.all_sprites.add(pow)
+                self.power.add(pow)
             if self.level != 0:
                 if random.random() < 0.5:
                     self.w = random.randrange(40,400)
@@ -139,8 +144,15 @@ class Game:
                     self.d = Radiusc(self.m)
                     self.corona_radiuses.add(self.d)
         self.distance = pg.sprite.spritecollide(self.player,self.people,False,pg.sprite.collide_circle)
+        if self.maskcount > 0:
+            self.maskcount -= 12/FPS
+        elif self.maskcount < 0:
+            self.maskcount = 0
         if self.distance:
-            self.health -= HEALTH_RATE / FPS
+            if self.maskcount > 0:
+                self.health -= 9 / FPS
+            else:
+                self.health -= HEALTH_RATE / FPS
         for i in self.corona_radiuses:
             if i.rect.centerx < -WIDTH:
                 i.kill()
@@ -155,11 +167,15 @@ class Game:
             ex = Explode(self,pows[0].pos.x,pows[0].pos.y)
             self.powsound.play()
             self.all_sprites.add(ex)
-            if self.health < 70:
-                self.health += 30
-                pows[0].kill()
-            else:
-                self.health = 100
+            if pows[0].type == 'sanitizer':
+                if self.health < 70:
+                    self.health += 30
+                    pows[0].kill()
+                else:
+                    self.health = 100
+                    pows[0].kill()
+            elif pows[0].type == 'mask':
+                self.maskcount = 100
                 pows[0].kill()
 
 
@@ -199,7 +215,9 @@ class Game:
             self.screen.blit(corona.image,corona.rect)
         self.people.draw(self.screen)
         self.draw_progress_bar(self.screen,GREEN,BROWN,130,5,300,30,self.health,BLACK)
+        self.draw_progress_bar(self.screen,GREEN,BROWN,130,40,300,30,self.maskcount,BLACK)
         self.draw_text(self.screen,"Health =", 30,3,3,BLACK)
+        self.draw_text(self.screen,"Mask =", 30,3,40,BLACK)
         self.draw_text_center(self.screen,"You are on level " + str(self.level),30,WIDTH / 2, 40,RED)
         for person in self.people:
             self.draw_text_center(self.screen,"Keep Distance (Or Else!)",20,person.rect.centerx,person.rect.top,GREEN)
@@ -220,6 +238,7 @@ class Game:
         self.draw_text_center(self.screen,""" and don't forget to sanitize your hands whenever you can.""",20,WIDTH/2,HEIGHT/2 - 5,RED)
         self.draw_text_center(self.screen,""" Use your arrow keys to move and spacebar to jump!""",20,WIDTH/2,HEIGHT/2 + 15,RED)
         self.draw_text_center(self.screen,""" Have Fun!""",25,WIDTH/2,HEIGHT/2 + 40,RED)
+        self.draw_text_center(self.screen,""" By Aranyak Ghosh""",25,WIDTH/2,HEIGHT/2 + 80,RED)
         self.wait_for_key(self.playbutton,True)
         pg.mixer.music.fadeout(100)
 
@@ -239,6 +258,7 @@ class Game:
         self.draw_text_center(self.screen,""" and don't forget to sanitize your hands whenever you can.""",20,WIDTH/2,HEIGHT/2 - 5,RED)
         self.draw_text_center(self.screen,""" Use your arrow keys to move and spacebar to jump!""",20,WIDTH/2,HEIGHT/2 + 15,RED)
         self.draw_text_center(self.screen,""" Have Fun!""",25,WIDTH/2,HEIGHT/2 + 40,RED)
+        self.draw_text_center(self.screen,""" By Aranyak Ghosh""",25,WIDTH/2,HEIGHT/2 + 80,RED)
         self.playagbutton = Button(WIDTH / 2,500,200,70,(0,170,0),GREEN)
         self.end_screen_sprites.add(self.playagbutton)
         self.wait_for_key(self.playagbutton,False)
@@ -256,6 +276,7 @@ class Game:
         self.draw_text_center(self.screen,""" and don't forget to sanitize your hands whenever you can.""",20,WIDTH/2,HEIGHT/2 - 5,RED)
         self.draw_text_center(self.screen,""" Use your arrow keys to move and spacebar to jump!""",20,WIDTH/2,HEIGHT/2 + 15,RED)
         self.draw_text_center(self.screen,""" Have Fun!""",25,WIDTH/2,HEIGHT/2 + 40,RED)
+        self.draw_text_center(self.screen,""" By Aranyak Ghosh""",25,WIDTH/2,HEIGHT/2 + 80,RED)
         self.wait_for_key(self.playbutton,True)
         pg.mixer.music.fadeout(100)
         self.level += 1

@@ -168,7 +168,11 @@ class Button(pg.sprite.Sprite):
 class Powerup(pg.sprite.Sprite):
     def __init__(self,type,x,y,game):
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.transform.scale(pg.image.load(POWERUPS[type]).convert_alpha(),(50,50))
+        self.image = pg.image.load(POWERUPS[type])
+        if type == 'sanitizer':
+            self.image = pg.transform.scale(self.image,(50,50))
+        elif type == 'mask':
+            self.image = pg.transform.scale(self.image,(100,50))
         self.rect = self.image.get_rect()
         self.rect.center = ((x,y))
         self.pos = vec(x,y)
