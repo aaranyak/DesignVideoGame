@@ -13,8 +13,13 @@ IMAGE_FOLDER = os.path.join(GAME_FOLDER,'Pictures')
 
 PLAYER_SPRITESHEET = os.path.join(IMAGE_FOLDER,'player_spritesheet.png')
 POWERUPS = {'sanitizer' : os.path.join(IMAGE_FOLDER,'sanitizer.png'),'mask' : os.path.join(IMAGE_FOLDER,'Mask.png')}
+PROPS = [os.path.join(IMAGE_FOLDER,'House.png'),os.path.join(IMAGE_FOLDER,'Bush.png'),os.path.join(IMAGE_FOLDER,'Tree1.png'),os.path.join(IMAGE_FOLDER,'Tree2.png')]
 HEALTH_RATE = 21
-
+clouds = []
+for i in range(4):
+    s = os.path.join(IMAGE_FOLDER,'clou'+str(i)+'.png')
+    clouds.append(s)
+CLOUDS = clouds
 for i in range(35):
     if i < 10:
         explode.append(os.path.join(IMAGE_FOLDER,'particle000'+str(i)+'.png'))

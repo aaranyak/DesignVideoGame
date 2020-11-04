@@ -131,6 +131,23 @@ class Person(pg.sprite.Sprite):
         self.addx += self.speed
         self.rect.centerx = self.ppoint.x + self.addx
         self.rect.bottom = self.platform.rect.top
+class Powerup(pg.sprite.Sprite):
+    def __init__(self,type,x,y,game):
+        pg.sprite.Sprite.__init__(self)
+        self.image = pg.image.load(POWERUPS[type])
+        if type == 'sanitizer':
+            self.image = pg.transform.scale(self.image,(50,50))
+        elif type == 'mask':
+            self.image = pg.transform.scale(self.image,(100,50))
+        self.rect = self.image.get_rect()
+        self.rect.center = ((x,y))
+        self.pos = vec(x,y)
+        self.type = type
+        self.game = game
+    def update(self):
+        self.pos.x += -self.game.player.vel.x + 0.5 * self.game.player.acc.x
+        self.rect.center = self.pos
+
 class Radiusc(pg.sprite.Sprite):
     def __init__(self,person):
         pg.sprite.Sprite.__init__(self)
@@ -164,23 +181,6 @@ class Button(pg.sprite.Sprite):
             return True
         else:
             return False
-
-class Powerup(pg.sprite.Sprite):
-    def __init__(self,type,x,y,game):
-        pg.sprite.Sprite.__init__(self)
-        self.image = pg.image.load(POWERUPS[type])
-        if type == 'sanitizer':
-            self.image = pg.transform.scale(self.image,(50,50))
-        elif type == 'mask':
-            self.image = pg.transform.scale(self.image,(100,50))
-        self.rect = self.image.get_rect()
-        self.rect.center = ((x,y))
-        self.pos = vec(x,y)
-        self.type = type
-        self.game = game
-    def update(self):
-        self.pos.x += -self.game.player.vel.x + 0.5 * self.game.player.acc.x
-        self.rect.center = self.pos
 class Explode(pg.sprite.Sprite):
     def __init__(self,game,x,y):
         pg.sprite.Sprite.__init__(self)
@@ -199,3 +199,26 @@ class Explode(pg.sprite.Sprite):
             self.image.set_colorkey(BLACK)
         if self.count > 33:
             self.kill()
+class Prop(pg.sprite.Sprite):
+    def __init__(self,x,y,game):
+        self.__layer__ = 0
+        pg.sprite.Sprite.__init__(self)
+        self.image = pg.transform.scale(pg.image.load(random.choice(PROPS)).convert_alpha(),(120,200))
+        self.rect = self.image.get_rect()
+        self.pos = vec(x,y)
+        self.rect.midbottom = self.pos
+        self.game = game
+    def update(self):
+        self.pos.x += -self.game.player.vel.x + 0.5 * self.game.player.acc.x
+        self.rect.midbottom = self.pos
+class Cloud(pg.sprite.Sprite):
+    def __init__(self,x,y,game):
+        pg.sprite.Sprite.__init__(self)
+        self.image = pg.transform.scale(pg.image.load(random.choice(CLOUDS)).convert_alpha(),(200,120))
+        self.rect = self.image.get_rect()
+        self.pos = vec(x,y)
+        self.rect.midbottom = self.pos
+        self.game = game
+    def update(self):
+        self.pos.x += (-self.game.player.vel.x + 0.5 * self.game.player.acc.x) *0.6
+        self.rect.midbottom = self.pos

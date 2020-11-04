@@ -19,6 +19,7 @@ class Game:
         self.start_screen_sprites.add(self.playbutton)
         self.end_screen_sprites.add(self.playagbutton)
         self.level = 0
+        self.bac = pg.image.load(os.path.join(IMAGE_FOLDER,'background.png')).convert()
 
     def hit_ground(self):
         self.platcols = pg.sprite.spritecollide(self.player, self.platforms,False)
@@ -63,6 +64,7 @@ class Game:
 
     def new(self):
         # start a new game
+        pg.display.set_caption(TITLE + " (Level " + str(self.level) + ")")
         self.game_over = False
         self.all_sprites = pg.sprite.Group()
         self.powsound = pg.mixer.Sound(os.path.join(MUSIC_FOLDER,'confirmation_004.ogg'))
@@ -73,7 +75,9 @@ class Game:
         self.corona_radiuses = pg.sprite.Group()
         self.invisibles = pg.sprite.Group()
         self.player_spritesheet = SpriteSheet(PLAYER_SPRITESHEET,7,2,446,793,BLACK)
+        self.props = pg.sprite.Group()
         self.power = pg.sprite.Group()
+        self.clouds = pg.sprite.Group()
         self.guy2image = [pg.image.load(os.path.join(os.path.join(IMAGE_FOLDER,'Cars'),'guy2.png')).convert_alpha(),pg.image.load(os.path.join(os.path.join(IMAGE_FOLDER,'Cars'),'guy3.png')).convert_alpha()]
         self.cars = [pg.image.load(os.path.join(os.path.join(IMAGE_FOLDER,'Cars'),'car1.png')).convert_alpha(),pg.image.load(os.path.join(os.path.join(IMAGE_FOLDER,'Cars'),'car2.png')).convert_alpha()]
         #Spawn sprites
@@ -102,6 +106,8 @@ class Game:
     def update(self):
         # Game Loop - Update
         self.all_sprites.update()
+        self.clouds.update()
+        self.props.update()
         self.corona_radiuses.update()
         self.invisibles.update()
         self.hit_ground()
@@ -133,6 +139,8 @@ class Game:
                 self.power.add(pow)
             if self.level != 0:
                 if random.random() < 0.5:
+                    p = Prop(random.randrange(WIDTH,WIDTH*2),HEIGHT-30,self)
+                    self.all_sprites.add(p)
                     self.w = random.randrange(40,400)
                     self.x = random.randrange(WIDTH,WIDTH*2)
                     self.y = HEIGHT
@@ -143,9 +151,15 @@ class Game:
                     self.people.add(self.m)
                     self.d = Radiusc(self.m)
                     self.corona_radiuses.add(self.d)
+            if random.random() < 0.7:
+                p = Prop(random.randrange(WIDTH,WIDTH*2),HEIGHT-30,self)
+                self.props.add(p)
+                for i in range(random.randrange(1,2)):
+                    c = Cloud(random.randrange(WIDTH+100,WIDTH*2),random.randrange(100,HEIGHT/2),self)
+                    self.clouds.add(c)
         self.distance = pg.sprite.spritecollide(self.player,self.people,False,pg.sprite.collide_circle)
         if self.maskcount > 0:
-            self.maskcount -= 12/FPS
+            self.maskcount -= 9/FPS
         elif self.maskcount < 0:
             self.maskcount = 0
         if self.distance:
@@ -160,6 +174,12 @@ class Game:
             if i.rect.left < -WIDTH:
                 i.kill()
         for i in self.invisibles:
+            if i.rect.left < -WIDTH:
+                i.kill()
+        for i in self.props:
+            if i.rect.right < 0:
+                i.kill()
+        for i in self.clouds:
             if i.rect.left < -WIDTH:
                 i.kill()
         pows = pg.sprite.spritecollide(self.player,self.power,False)
@@ -210,6 +230,9 @@ class Game:
     def draw(self):
         # Game Loop - draw
         self.screen.fill(BLUE)
+        self.screen.blit(self.bac,(0,0))
+        self.clouds.draw(self.screen)
+        self.props.draw(self.screen)
         self.all_sprites.draw(self.screen)
         for corona in self.corona_radiuses:
             self.screen.blit(corona.image,corona.rect)
@@ -218,7 +241,7 @@ class Game:
         self.draw_progress_bar(self.screen,GREEN,BROWN,130,40,300,30,self.maskcount,BLACK)
         self.draw_text(self.screen,"Health =", 30,3,3,BLACK)
         self.draw_text(self.screen,"Mask =", 30,3,40,BLACK)
-        self.draw_text_center(self.screen,"You are on level " + str(self.level),30,WIDTH / 2, 40,RED)
+        #self.draw_text_center(self.screen,"You are on level " + str(self.level),30,WIDTH / 2, 40,RED)
         for person in self.people:
             self.draw_text_center(self.screen,"Keep Distance (Or Else!)",20,person.rect.centerx,person.rect.top,GREEN)
 
@@ -227,6 +250,7 @@ class Game:
 
     def show_start_screen(self):
         # game splash/start screen
+        pg.display.set_caption(TITLE)
         pg.mixer.music.load(os.path.join(MUSIC_FOLDER,'Chase.ogg'))
         pg.mixer.music.play(loops=-1)
         self.screen.fill(BLUE)
@@ -246,6 +270,7 @@ class Game:
 
     def show_go_screen(self):
         # game over/continue
+        pg.display.set_caption(TITLE)
         pg.mixer.music.load(os.path.join(MUSIC_FOLDER,'Em-Poms-.ogg'))
         pg.mixer.music.play(loops=-1)
         self.screen.fill(BLUE)
@@ -264,6 +289,7 @@ class Game:
         self.wait_for_key(self.playagbutton,False)
         pg.mixer.music.fadeout(100)
     def show_win_screen(self):
+        pg.display.set_caption(TITLE)
         pg.mixer.music.load(os.path.join(MUSIC_FOLDER,'Chase.ogg'))
         pg.mixer.music.play(loops=-1)
         self.screen.fill(BLUE)
