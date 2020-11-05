@@ -88,6 +88,7 @@ class Game:
         self.guy2image = [pg.image.load(os.path.join(os.path.join(IMAGE_FOLDER,'Cars'),'guy2.png')).convert_alpha(),pg.image.load(os.path.join(os.path.join(IMAGE_FOLDER,'Cars'),'guy3.png')).convert_alpha()]
         self.cars = [pg.image.load(os.path.join(os.path.join(IMAGE_FOLDER,'Cars'),'car1.png')).convert_alpha(),pg.image.load(os.path.join(os.path.join(IMAGE_FOLDER,'Cars'),'car2.png')).convert_alpha()]
         #Spawn sprites
+        self.oldscore = self.score
         self.player = Player(self)
         self.all_sprites.add(self.player)
         self.spawn_platforms()
@@ -265,7 +266,7 @@ class Game:
 
     def show_start_screen(self):
         # game splash/start screen
-        self.winner = topper.winner(self.name,self.level,self.score)
+        self.winner = topper.winner()
         pg.display.set_caption(TITLE)
         pg.mixer.music.load(os.path.join(MUSIC_FOLDER,'Chase.ogg'))
         pg.mixer.music.play(loops=-1)
@@ -279,7 +280,7 @@ class Game:
         self.draw_text_center(self.screen,""" Use your arrow keys to move and spacebar to jump!""",20,WIDTH/2,HEIGHT/2 + 15,RED)
         self.draw_text_center(self.screen,""" Have Fun!""",25,WIDTH/2,HEIGHT/2 + 40,RED)
         self.draw_text_center(self.screen,""" By Aranyak Ghosh""",25,WIDTH/2,HEIGHT/2 + 80,RED)
-        self.draw_text_center(self.screen,"Today's Winner: " + self.winner[0],25,WIDTH/2,HEIGHT/2 + 120,RED)
+        self.draw_text_center(self.screen,"Best Social Distancer: " + self.winner[0],25,WIDTH/2,HEIGHT/2 + 120,RED)
         self.draw_text_center(self.screen,"Won Level "+ str(self.winner[1]) +" Score "+str(self.winner[2]),25,WIDTH/2,HEIGHT/2 + 145,RED)
         self.wait_for_key(self.playbutton,True)
         pg.mixer.music.fadeout(100)
@@ -288,7 +289,8 @@ class Game:
 
     def show_go_screen(self):
         # game over/continue
-        self.winner = topper.winner(self.name,self.level,self.score)
+        self.winner = topper.winner()
+        self.score = self.oldscore
         pg.display.set_caption(TITLE)
         pg.mixer.music.load(os.path.join(MUSIC_FOLDER,'Em-Poms-.ogg'))
         pg.mixer.music.play(loops=-1)
@@ -303,14 +305,14 @@ class Game:
         self.draw_text_center(self.screen,""" Use your arrow keys to move and spacebar to jump!""",20,WIDTH/2,HEIGHT/2 + 15,RED)
         self.draw_text_center(self.screen,""" Have Fun!""",25,WIDTH/2,HEIGHT/2 + 40,RED)
         self.draw_text_center(self.screen,""" By Aranyak Ghosh""",25,WIDTH/2,HEIGHT/2 + 80,RED)
-        self.draw_text_center(self.screen,"Today's Winner: " + self.winner[0],25,WIDTH/2,HEIGHT/2 + 120,RED)
+        self.draw_text_center(self.screen,"Best Social Distancer: " + self.winner[0],25,WIDTH/2,HEIGHT/2 + 120,RED)
         self.draw_text_center(self.screen,"Won Level "+ str(self.winner[1]) +" Score "+str(self.winner[2]),25,WIDTH/2,HEIGHT/2 + 145,RED)
         self.playagbutton = Button(WIDTH / 2,500,200,70,(0,170,0),GREEN)
         self.end_screen_sprites.add(self.playagbutton)
         self.wait_for_key(self.playagbutton,False)
         pg.mixer.music.fadeout(100)
     def show_win_screen(self):
-        self.winner = topper.winner(self.name,self.level,self.score)
+        self.winner = topper.winner_up(self.name,self.level,self.score)
         pg.display.set_caption(TITLE)
         pg.mixer.music.load(os.path.join(MUSIC_FOLDER,'Chase.ogg'))
         pg.mixer.music.play(loops=-1)
@@ -325,7 +327,7 @@ class Game:
         self.draw_text_center(self.screen,""" Use your arrow keys to move and spacebar to jump!""",20,WIDTH/2,HEIGHT/2 + 15,RED)
         self.draw_text_center(self.screen,""" Have Fun!""",25,WIDTH/2,HEIGHT/2 + 40,RED)
         self.draw_text_center(self.screen,""" By Aranyak Ghosh""",25,WIDTH/2,HEIGHT/2 + 80,RED)
-        self.draw_text_center(self.screen,"Today's Winner: "+ self.winner[0],25,WIDTH/2,HEIGHT/2 + 120,RED)
+        self.draw_text_center(self.screen,"Best Social Distancer: "+ self.winner[0],25,WIDTH/2,HEIGHT/2 + 120,RED)
         self.draw_text_center(self.screen,"Won Level "+ str(self.winner[1]) +" Score "+str(self.winner[2]),25,WIDTH/2,HEIGHT/2 + 145,RED)
         self.wait_for_key(self.playbutton,True)
         pg.mixer.music.fadeout(100)
@@ -357,7 +359,7 @@ class Game:
             pg.display.flip()
 
 master = tk.Tk()
-tk.Label(master,text="Please enter your nickname").grid(row=0)
+tk.Label(master,text="Enter a nickname that makes no sense").grid(row=0)
 tk.Label(master, text="Nickname: ").grid(row=1)
 
 e1 = tk.Entry(master)
