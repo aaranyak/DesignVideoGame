@@ -2,9 +2,13 @@ import pygame as pg
 import random
 from settings import *
 from sprites import *
+import urllib
+import topper
+name = "Social Dstancer"
+import tkinter as tk
 
 class Game:
-    def __init__(self):
+    def __init__(self,name):
         # initialize game window, etc
         pg.init()
         pg.mixer.init()
@@ -19,6 +23,8 @@ class Game:
         self.start_screen_sprites.add(self.playbutton)
         self.end_screen_sprites.add(self.playagbutton)
         self.level = 0
+        self.score = 0
+        self.name = name
         self.bac = pg.image.load(os.path.join(IMAGE_FOLDER,'background.png')).convert()
 
     def hit_ground(self):
@@ -67,6 +73,7 @@ class Game:
         pg.display.set_caption(TITLE + " (Level " + str(self.level) + ")")
         self.game_over = False
         self.all_sprites = pg.sprite.Group()
+
         self.powsound = pg.mixer.Sound(os.path.join(MUSIC_FOLDER,'confirmation_004.ogg'))
         self.platforms = pg.sprite.Group()
         self.people = pg.sprite.Group()
@@ -137,6 +144,10 @@ class Game:
                 pow = Powerup('mask',random.randrange(WIDTH,WIDTH*2),random.randrange(40,HEIGHT-40),self)
                 self.all_sprites.add(pow)
                 self.power.add(pow)
+            if random.random() > 0.7:
+                pow = Powerup('coin',random.randrange(WIDTH,WIDTH*2),random.randrange(40,HEIGHT-40),self)
+                self.all_sprites.add(pow)
+                self.power.add(pow)
             if self.level != 0:
                 if random.random() < 0.5:
                     p = Prop(random.randrange(WIDTH,WIDTH*2),HEIGHT-30,self)
@@ -197,6 +208,9 @@ class Game:
             elif pows[0].type == 'mask':
                 self.maskcount = 100
                 pows[0].kill()
+            elif pows[0].type == 'coin':
+                self.score += 1
+                pows[0].kill()
 
 
 
@@ -241,6 +255,7 @@ class Game:
         self.draw_progress_bar(self.screen,GREEN,BROWN,130,40,300,30,self.maskcount,BLACK)
         self.draw_text(self.screen,"Health =", 30,3,3,BLACK)
         self.draw_text(self.screen,"Mask =", 30,3,40,BLACK)
+        self.draw_text(self.screen,"Score = " + str(self.score), 30,3,65,BLACK)
         #self.draw_text_center(self.screen,"You are on level " + str(self.level),30,WIDTH / 2, 40,RED)
         for person in self.people:
             self.draw_text_center(self.screen,"Keep Distance (Or Else!)",20,person.rect.centerx,person.rect.top,GREEN)
@@ -250,6 +265,7 @@ class Game:
 
     def show_start_screen(self):
         # game splash/start screen
+        self.winner = topper.winner(self.name,self.level,self.score)
         pg.display.set_caption(TITLE)
         pg.mixer.music.load(os.path.join(MUSIC_FOLDER,'Chase.ogg'))
         pg.mixer.music.play(loops=-1)
@@ -263,6 +279,8 @@ class Game:
         self.draw_text_center(self.screen,""" Use your arrow keys to move and spacebar to jump!""",20,WIDTH/2,HEIGHT/2 + 15,RED)
         self.draw_text_center(self.screen,""" Have Fun!""",25,WIDTH/2,HEIGHT/2 + 40,RED)
         self.draw_text_center(self.screen,""" By Aranyak Ghosh""",25,WIDTH/2,HEIGHT/2 + 80,RED)
+        self.draw_text_center(self.screen,"Today's Winner: " + self.winner[0],25,WIDTH/2,HEIGHT/2 + 120,RED)
+        self.draw_text_center(self.screen,"Won Level "+ str(self.winner[1]) +" Score "+str(self.winner[2]),25,WIDTH/2,HEIGHT/2 + 145,RED)
         self.wait_for_key(self.playbutton,True)
         pg.mixer.music.fadeout(100)
 
@@ -270,6 +288,7 @@ class Game:
 
     def show_go_screen(self):
         # game over/continue
+        self.winner = topper.winner(self.name,self.level,self.score)
         pg.display.set_caption(TITLE)
         pg.mixer.music.load(os.path.join(MUSIC_FOLDER,'Em-Poms-.ogg'))
         pg.mixer.music.play(loops=-1)
@@ -284,11 +303,14 @@ class Game:
         self.draw_text_center(self.screen,""" Use your arrow keys to move and spacebar to jump!""",20,WIDTH/2,HEIGHT/2 + 15,RED)
         self.draw_text_center(self.screen,""" Have Fun!""",25,WIDTH/2,HEIGHT/2 + 40,RED)
         self.draw_text_center(self.screen,""" By Aranyak Ghosh""",25,WIDTH/2,HEIGHT/2 + 80,RED)
+        self.draw_text_center(self.screen,"Today's Winner: " + self.winner[0],25,WIDTH/2,HEIGHT/2 + 120,RED)
+        self.draw_text_center(self.screen,"Won Level "+ str(self.winner[1]) +" Score "+str(self.winner[2]),25,WIDTH/2,HEIGHT/2 + 145,RED)
         self.playagbutton = Button(WIDTH / 2,500,200,70,(0,170,0),GREEN)
         self.end_screen_sprites.add(self.playagbutton)
         self.wait_for_key(self.playagbutton,False)
         pg.mixer.music.fadeout(100)
     def show_win_screen(self):
+        self.winner = topper.winner(self.name,self.level,self.score)
         pg.display.set_caption(TITLE)
         pg.mixer.music.load(os.path.join(MUSIC_FOLDER,'Chase.ogg'))
         pg.mixer.music.play(loops=-1)
@@ -303,6 +325,8 @@ class Game:
         self.draw_text_center(self.screen,""" Use your arrow keys to move and spacebar to jump!""",20,WIDTH/2,HEIGHT/2 + 15,RED)
         self.draw_text_center(self.screen,""" Have Fun!""",25,WIDTH/2,HEIGHT/2 + 40,RED)
         self.draw_text_center(self.screen,""" By Aranyak Ghosh""",25,WIDTH/2,HEIGHT/2 + 80,RED)
+        self.draw_text_center(self.screen,"Today's Winner: "+ self.winner[0],25,WIDTH/2,HEIGHT/2 + 120,RED)
+        self.draw_text_center(self.screen,"Won Level "+ str(self.winner[1]) +" Score "+str(self.winner[2]),25,WIDTH/2,HEIGHT/2 + 145,RED)
         self.wait_for_key(self.playbutton,True)
         pg.mixer.music.fadeout(100)
         self.level += 1
@@ -332,14 +356,24 @@ class Game:
             self.clock.tick(FPS)
             pg.display.flip()
 
+master = tk.Tk()
+tk.Label(master,text="Please enter your nickname").grid(row=0)
+tk.Label(master, text="Nickname: ").grid(row=1)
 
-g = Game()
-g.show_start_screen()
-while g.running:
-    g.new()
-    if g.game_over:
-        g.show_go_screen()
-    if not g.game_over:
-        g.show_win_screen()
-pg.quit()
-quit()
+e1 = tk.Entry(master)
+
+e1.grid(row=1, column=1)
+def enter_name():
+    name = e1.get()
+    g = Game(name)
+    g.show_start_screen()
+    while g.running:
+        g.new()
+        if g.game_over:
+            g.show_go_screen()
+        if not g.game_over:
+            g.show_win_screen()
+    pg.quit()
+    quit()
+tk.Button(master,text="Ckick to Play",command=enter_name).grid(row=2)
+master.mainloop()

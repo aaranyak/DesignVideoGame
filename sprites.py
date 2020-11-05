@@ -135,7 +135,7 @@ class Powerup(pg.sprite.Sprite):
     def __init__(self,type,x,y,game):
         pg.sprite.Sprite.__init__(self)
         self.image = pg.image.load(POWERUPS[type])
-        if type == 'sanitizer':
+        if type == 'sanitizer' or type == 'coin':
             self.image = pg.transform.scale(self.image,(50,50))
         elif type == 'mask':
             self.image = pg.transform.scale(self.image,(100,50))

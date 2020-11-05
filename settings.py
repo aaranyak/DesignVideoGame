@@ -12,7 +12,7 @@ MUSIC_FOLDER = os.path.join(GAME_FOLDER,'Music')
 IMAGE_FOLDER = os.path.join(GAME_FOLDER,'Pictures')
 
 PLAYER_SPRITESHEET = os.path.join(IMAGE_FOLDER,'player_spritesheet.png')
-POWERUPS = {'sanitizer' : os.path.join(IMAGE_FOLDER,'sanitizer.png'),'mask' : os.path.join(IMAGE_FOLDER,'Mask.png')}
+POWERUPS = {'sanitizer' : os.path.join(IMAGE_FOLDER,'sanitizer.png'),'mask' : os.path.join(IMAGE_FOLDER,'Mask.png'),'coin':os.path.join(IMAGE_FOLDER,'covid.png')}
 PROPS = [os.path.join(IMAGE_FOLDER,'House.png'),os.path.join(IMAGE_FOLDER,'Bush.png'),os.path.join(IMAGE_FOLDER,'Tree1.png'),os.path.join(IMAGE_FOLDER,'Tree2.png')]
 HEALTH_RATE = 21
 clouds = []
